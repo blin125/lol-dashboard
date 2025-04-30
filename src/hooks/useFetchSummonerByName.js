@@ -1,34 +1,32 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import fetchSummonerByName from "../util/fetchSummonerByName.js";
 
-function useFetchSummonerByName(summonerName, tagLine) {
-    const [summonerData, setSummonerData] = useState(null); // State to store fetched data
-    const [error, setError] = useState(null); // State to store any errors
-    const [loading, setLoading] = useState(true); // State to track loading status
-    const hasFetched = useRef(false); // Track if fetch has already been initiated
+function useFetchSummonerByName(summonerName, summonerTag, summonerRegion) {
+  const [summonerData, setSummonerData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (hasFetched.current) return; // Prevent double fetching
-        hasFetched.current = true;
+  useEffect(() => {
+    if (!summonerName || !summonerTag) return; // Skip if inputs are empty
 
-        async function fetchData() {
-            try {
-                setLoading(true); // Start loading
-                const data = await fetchSummonerByName(summonerName, tagLine);
-                console.log("Fetched summoner data:", data);
-                setSummonerData(data); // Update state with fetched data
-            } catch (error) {
-                console.error("Failed to fetch summoner:", error);
-                setError(error); // Update state with error
-            } finally {
-                setLoading(false); // Stop loading
-            }
-        }
+    async function fetchData() {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchSummonerByName(summonerName, summonerTag, summonerRegion);
+        setSummonerData(data);
+      } catch (error) {
+        setError(error);
+        setSummonerData(null);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-        fetchData();
-    }, [summonerName, tagLine]); // Re-run effect if summonerName or tagLine changes
+    fetchData();
+  }, [summonerName, summonerTag]);
 
-    return { summonerData, error, loading }; // Return data, error, and loading state
+  return { summonerData, error, loading };
 }
 
 export default useFetchSummonerByName;
