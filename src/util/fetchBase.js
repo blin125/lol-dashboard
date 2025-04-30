@@ -1,6 +1,8 @@
 import axios from 'axios';
 
 const API_KEY = 'RGAPI-26f377d3-5d6c-4147-b274-2d95cc44a562'; // ⚠️ Make sure not to expose this on frontend in production
+// Need to make sure to hide the API key in production, this is just for testing purposes
+// You can use environment variables or a config file to store the API key securely
 const regionMap = {
     BR1: { name: "Brazil", cluster: "americas" },
     EUNE: { name: "Europe Nordic & East", cluster: "europe" },

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import fetchSummonerByName from "../util/fetchSummonerByName.js";
 
-function useFetchSummonerByName(summonerName, summonerTag, summonerRegion) {
+function useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted) {
   const [summonerData, setSummonerData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!summonerName || !summonerTag) return; // Skip if inputs are empty
+    if (!submitted || !summonerName || !summonerTag || !summonerRegion) return; // Skip if not submitted or inputs are empty
 
     async function fetchData() {
       try {
@@ -16,7 +16,7 @@ function useFetchSummonerByName(summonerName, summonerTag, summonerRegion) {
         const data = await fetchSummonerByName(summonerName, summonerTag, summonerRegion);
         setSummonerData(data);
       } catch (error) {
-        setError(error);
+        setError(error.response?.data || "An error occurred");
         setSummonerData(null);
       } finally {
         setLoading(false);
@@ -24,7 +24,7 @@ function useFetchSummonerByName(summonerName, summonerTag, summonerRegion) {
     }
 
     fetchData();
-  }, [summonerName, summonerTag]);
+  }, [submitted, summonerName, summonerTag, summonerRegion]);
 
   return { summonerData, error, loading };
 }

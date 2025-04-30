@@ -12,7 +12,7 @@ function App() {
   const [summonerTag, setSummonerTag] = useState('');
   const [summonerRegion, setSummonerRegion] = useState('');
   const [submitted, setSubmitted] = useState(false); // Track if the form was submitted
-  const {summonerData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion);
+  const { summonerData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
 
   const handleSubmit = (event) => {
     event.preventDefault();
