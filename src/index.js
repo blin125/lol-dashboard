@@ -3,16 +3,16 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import useFetchSummonerByName from './hooks/useFetchSummonerByName.js';
 import reportWebVitals from './reportWebVitals.js';
-import fetchBase from './util/fetchBase.js';
-
+import { fetchBase, fetchBasebyPUUID } from './util/fetchDefault.js';
+import useFetchSummonerByPUUID from './hooks/useFetchSummonerByPUUID.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
-
 function App() {
   const [summonerName, setSummonerName] = useState('');
   const [summonerTag, setSummonerTag] = useState('');
   const [summonerRegion, setSummonerRegion] = useState('');
   const [submitted, setSubmitted] = useState(false); // Track if the form was submitted
-  const { summonerData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
+  const { accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
+  const { summonerData, error: puuidError } = useFetchSummonerByPUUID("2MC128G2rlty4-fe5iJf0tiXzUQz4xVcjngEk38UHFoP9h4WEnZuGPZ55Jj6PmoiSxEuAh-n4KWLDQ", summonerRegion);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -28,7 +28,13 @@ function App() {
     setSubmitted(true); // Set submitted to true when the form is submitted
     console.log(`Submitting: ${name} with tag ${tag} and region ${event.target.Region.value}`);
   };
- 
+
+  // Log summonerData when it updates
+  React.useEffect(() => {
+    if (summonerData) {
+      console.log('Summoner Data:', summonerData);
+    }
+  }, [summonerData]);
 
   return (
     <div>
@@ -52,7 +58,7 @@ function App() {
           <option value="SG2">Southeast Asia</option>
           <option value="TW2">Taiwan</option>
           <option value="TR1">Turkey</option>
-          <option value="VN2">Vietnan</option>
+          <option value="VN2">Vietnam</option>
         </select>
 
         <button type="submit">Submit</button>
@@ -62,15 +68,20 @@ function App() {
         <div>
           {loading && <p>Loading...</p>}
           {error && <p>Error: User not found.</p>}
-          {summonerData && (
-            <pre>{JSON.stringify(summonerData, null, 2)}</pre>
+          {puuidError && <p>Error fetching PUUID data: {puuidError}</p>}
+          {accountData && summonerData && (
+            <div>
+              <h2>Summoner Information</h2>
+              <p><strong>Name:</strong> {accountData.givenName}</p>
+              <p><strong>Level:</strong> {summonerData.summonerLevel}</p>
+              <p><strong>Region:</strong> {summonerRegion}</p>
+            </div>
           )}
         </div>
-      )}
+    )}
     </div>
   );
 }
-
 root.render(
   <React.StrictMode>
     <App />

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = 'RGAPI-26f377d3-5d6c-4147-b274-2d95cc44a562'; // ⚠️ Make sure not to expose this on frontend in production
+const API_KEY = 'RGAPI-a183a195-c38e-4f7c-a6e1-2fbfb2c84871'; // ⚠️ Make sure not to expose this on frontend in production
 // Need to make sure to hide the API key in production, this is just for testing purposes
 // You can use environment variables or a config file to store the API key securely
 const regionMap = {
@@ -39,5 +39,22 @@ function fetchBase(tag = 'BR1') {
 
     return instance;
 }
+function fetchBasebyPUUID(tag = 'BR1') {
+    const instance = axios.create({
+        baseURL: `https://${tag}.api.riotgames.com/`,
+    });
 
-export default fetchBase;
+    instance.interceptors.request.use((config) => {
+        if (!config.params) {
+            config.params = {};
+        }
+        config.params['api_key'] = API_KEY;
+        return config;
+    }, (error) => {
+        return Promise.reject(error);
+    });
+
+    return instance;
+}
+
+export { fetchBase, fetchBasebyPUUID };

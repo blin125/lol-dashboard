@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import fetchSummonerByName from "../util/fetchSummonerByName.js";
+import fetchAccountByName from "../util/fetchAccountByName.js";
 
 function useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted) {
-  const [summonerData, setSummonerData] = useState(null);
+  const [accountData, setAccountData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -13,11 +13,11 @@ function useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submi
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchSummonerByName(summonerName, summonerTag, summonerRegion);
-        setSummonerData(data);
+        const data = await fetchAccountByName(summonerName, summonerTag, summonerRegion);
+        setAccountData(data);
       } catch (error) {
         setError(error.response?.data || "An error occurred");
-        setSummonerData(null);
+        setAccountData(null);
       } finally {
         setLoading(false);
       }
@@ -26,7 +26,7 @@ function useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submi
     fetchData();
   }, [submitted, summonerName, summonerTag, summonerRegion]);
 
-  return { summonerData, error, loading };
+  return { accountData, error, loading };
 }
 
 export default useFetchSummonerByName;
