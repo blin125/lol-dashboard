@@ -5,14 +5,17 @@ import useFetchSummonerByName from './hooks/useFetchSummonerByName.js';
 import reportWebVitals from './reportWebVitals.js';
 import { fetchBase, fetchBasebyPUUID } from './util/fetchDefault.js';
 import useFetchSummonerByPUUID from './hooks/useFetchSummonerByPUUID.js';
+import useFetchSummonerGameStat from './hooks/useFetchSummonerGameStat.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 function App() {
   const [summonerName, setSummonerName] = useState('');
   const [summonerTag, setSummonerTag] = useState('');
   const [summonerRegion, setSummonerRegion] = useState('');
   const [submitted, setSubmitted] = useState(false); // Track if the form was submitted
-  const { accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
-  const { summonerData, error: puuidError } = useFetchSummonerByPUUID("pjt_-qoX3hK_fySwbzOMZgUac_h9YwOiK72oN6jBUoDBfyEYJqXHl8Arv6Sx9gbPhh0xy5PzvdzQsA", summonerRegion);
+  const [puuid, setPuuid] = useState(null);
+  const {accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
+  const {summonerData, error: puuidError } = useFetchSummonerByPUUID(puuid, summonerRegion);
+  const {summonerGameData, error: gameStatError} = useFetchSummonerGameStat(puuid, summonerRegion);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -32,6 +35,7 @@ function App() {
   // Log summonerData when it updates
   React.useEffect(() => {
     if (accountData) {
+      setPuuid(accountData.puuid);
       console.log('Account Data:', accountData);
     }
   }, [accountData]);
@@ -41,6 +45,13 @@ function App() {
       console.log('Summoner Data:', summonerData);
     }
   }, [summonerData]);
+
+  React.useEffect(() => {
+    if (summonerGameData) {
+      console.log('Summoner Game Data:', summonerGameData);
+      console.log('Summoner Game Data size:', summonerGameData.length);
+    }
+  }, [summonerGameData]);
 
   return (
     <div>
@@ -82,6 +93,22 @@ function App() {
               <p><strong>Name:</strong> {accountData.gameName}</p>
               <p><strong>Level:</strong> {summonerData.summonerLevel}</p>
               <p><strong>Region:</strong> {summonerRegion}</p>
+            </div>
+          )}
+          {summonerGameData && summonerGameData.length > 0 && (
+            <div>
+              <h2>Ranked Statistics</h2>
+              <ul>
+                {summonerGameData.map((queue) => (
+                  <li key={queue.queueType}>
+                    <p><strong>Queue:</strong> {queue.queueType}</p>
+                    <p><strong>Tier:</strong> {queue.tier} {queue.rank} ({queue.leaguePoints} LP)</p>
+                    <p><strong>Wins:</strong> {queue.wins}</p>
+                    <p><strong>Losses:</strong> {queue.losses}</p>
+                    <p><strong>Win Rate:</strong> {Math.round((queue.wins / (queue.wins + queue.losses)) * 100)}%</p>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
