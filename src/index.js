@@ -30,17 +30,17 @@ function App() {
   };
 
   // Log summonerData when it updates
- React.useEffect(() => {
-  if (accountData) {
-    console.log('Account Data:', accountData);
-  }
-}, [accountData]);
+  React.useEffect(() => {
+    if (accountData) {
+      console.log('Account Data:', accountData);
+    }
+  }, [accountData]);
 
-React.useEffect(() => {
-  if (summonerData) {
-    console.log('Summoner Data:', summonerData);
-  }
-}, [summonerData]);
+  React.useEffect(() => {
+    if (summonerData) {
+      console.log('Summoner Data:', summonerData);
+    }
+  }, [summonerData]);
 
   return (
     <div>
@@ -76,6 +76,9 @@ React.useEffect(() => {
           {accountData && summonerData && (
             <div>
               <h2>Summoner Information</h2>
+              <img src={`https://ddragon.leagueoflegends.com/cdn/14.10.1/img/profileicon/${summonerData.profileIconId}.png`} alt="Summoner Icon" 
+              width={64}
+              height={64}/>
               <p><strong>Name:</strong> {accountData.gameName}</p>
               <p><strong>Level:</strong> {summonerData.summonerLevel}</p>
               <p><strong>Region:</strong> {summonerRegion}</p>
