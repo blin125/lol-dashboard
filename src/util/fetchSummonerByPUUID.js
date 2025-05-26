@@ -1,4 +1,4 @@
-import { fetchBase, fetchBasebyPUUID } from './fetchDefault.js';
+import { fetchBasebyPUUID } from './fetchDefault.js';
 async function fetchSummonerByPUUID(puuid, summonerRegion) {
     const api = fetchBasebyPUUID(summonerRegion); 
     console.log(`Fetching data for PUUID ${puuid} with tag ${summonerRegion}`); // Debugging line

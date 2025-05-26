@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = 'RGAPI-a183a195-c38e-4f7c-a6e1-2fbfb2c84871'; // ⚠️ Make sure not to expose this on frontend in production
+const API_KEY = 'RGAPI-f067a265-e06e-475b-878d-091dea0166bd'; // ⚠️ Make sure not to expose this on frontend in production
 // Need to make sure to hide the API key in production, this is just for testing purposes
 // You can use environment variables or a config file to store the API key securely
 const regionMap = {

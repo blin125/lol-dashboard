@@ -12,7 +12,7 @@ function App() {
   const [summonerRegion, setSummonerRegion] = useState('');
   const [submitted, setSubmitted] = useState(false); // Track if the form was submitted
   const { accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
-  const { summonerData, error: puuidError } = useFetchSummonerByPUUID("2MC128G2rlty4-fe5iJf0tiXzUQz4xVcjngEk38UHFoP9h4WEnZuGPZ55Jj6PmoiSxEuAh-n4KWLDQ", summonerRegion);
+  const { summonerData, error: puuidError } = useFetchSummonerByPUUID("pjt_-qoX3hK_fySwbzOMZgUac_h9YwOiK72oN6jBUoDBfyEYJqXHl8Arv6Sx9gbPhh0xy5PzvdzQsA", summonerRegion);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -30,11 +30,17 @@ function App() {
   };
 
   // Log summonerData when it updates
-  React.useEffect(() => {
-    if (summonerData) {
-      console.log('Summoner Data:', summonerData);
-    }
-  }, [summonerData]);
+ React.useEffect(() => {
+  if (accountData) {
+    console.log('Account Data:', accountData);
+  }
+}, [accountData]);
+
+React.useEffect(() => {
+  if (summonerData) {
+    console.log('Summoner Data:', summonerData);
+  }
+}, [summonerData]);
 
   return (
     <div>
@@ -67,12 +73,10 @@ function App() {
       {submitted && (
         <div>
           {loading && <p>Loading...</p>}
-          {error && <p>Error: User not found.</p>}
-          {puuidError && <p>Error fetching PUUID data: {puuidError}</p>}
           {accountData && summonerData && (
             <div>
               <h2>Summoner Information</h2>
-              <p><strong>Name:</strong> {accountData.givenName}</p>
+              <p><strong>Name:</strong> {accountData.gameName}</p>
               <p><strong>Level:</strong> {summonerData.summonerLevel}</p>
               <p><strong>Region:</strong> {summonerRegion}</p>
             </div>
