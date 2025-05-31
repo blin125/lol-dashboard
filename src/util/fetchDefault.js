@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = 'RGAPI-f067a265-e06e-475b-878d-091dea0166bd'; // ⚠️ Make sure not to expose this on frontend in production
+const API_KEY = 'RGAPI-da169b50-3c48-4835-b04a-e5b865172c69'; // ⚠️ Make sure not to expose this on frontend in production
 // Need to make sure to hide the API key in production, this is just for testing purposes
 // You can use environment variables or a config file to store the API key securely
 const regionMap = {
@@ -21,7 +21,12 @@ const regionMap = {
     VN2: { name: "Vietnam", cluster: "asia" },
   };
 function fetchBase(tag = 'BR1') {
-    const region = regionMap[tag].cluster;
+    let region;
+    if (tag === 'SEA') {
+        region = 'sea'; // Use 'sea' directly if tag is 'SEA'
+    } else {
+        region = regionMap[tag].cluster;
+    }
     console.log(`Using region: ${region}`); // Debugging line
     const instance = axios.create({
         baseURL: `https://${region}.api.riotgames.com/`,
@@ -40,6 +45,7 @@ function fetchBase(tag = 'BR1') {
     return instance;
 }
 function fetchBasebyPUUID(tag = 'BR1') {
+    console.log(`Using region: ${tag.cluster}`); // Debugging line
     const instance = axios.create({
         baseURL: `https://${tag}.api.riotgames.com/`,
     });
