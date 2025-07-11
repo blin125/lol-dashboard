@@ -1,7 +1,8 @@
 import { fetchBasebyPUUID } from './fetchDefault.js';
+
+// Fetches ranked stats for a summoner by puuid and region
 async function fetchSummonerGameStat(puuid, summonerRegion) {
-    const api = fetchBasebyPUUID(summonerRegion); 
-    console.log(`Fetching data for PUUID ${puuid} with tag ${summonerRegion}`); // Debugging line
+    const api = fetchBasebyPUUID(summonerRegion);
     try {
         const response = await api.get(`/lol/league/v4/entries/by-puuid/${puuid}`);
         return response.data;

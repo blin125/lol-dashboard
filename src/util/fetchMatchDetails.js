@@ -1,8 +1,8 @@
 import { fetchBase } from "./fetchDefault.js";
 
+// Fetches full match details for an array of match IDs and a region
 export async function fetchMatchDetails(matchIds, region) {
     if (["OC1", "SG2", "TW2", "VN2"].includes(region)) {
-        console.log("this is the summoner region", region)
         region = "SEA";
     }
     const api = fetchBase(region);

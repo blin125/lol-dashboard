@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import fetchSummonerGameStat from "../util/fetchSummonerGameStat.js";
 
+// Fetches ranked stats for a summoner by puuid and region
 function useFetchSummonerGameStat(puuid, summonerRegion) {
-  const [summonerGameData, setSummonerGameData] = useState([]); // Default to empty array
+  const [summonerGameData, setSummonerGameData] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!puuid || !summonerRegion) return; // Skip if puuid or region is missing
+    if (!puuid || !summonerRegion) return;
 
     async function fetchData() {
       try {
-        setError(null); // Reset error before fetching
+        setError(null);
         const data = await fetchSummonerGameStat(puuid, summonerRegion);
-        // If the API returns an error object, treat as empty array
         if (data && data.error) {
           setSummonerGameData([]);
           setError(data.error);

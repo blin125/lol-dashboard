@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchMatchHistory } from "../util/fetchMatchHistory.js";
 
+// Fetches an array of match IDs for a given puuid and region
 function useFetchMatchHistory(puuid, summonerRegion, count = 10) {
     const [matchHistory, setMatchHistory] = useState([]);
     const [error, setError] = useState(null);
@@ -12,7 +13,7 @@ function useFetchMatchHistory(puuid, summonerRegion, count = 10) {
             .then(setMatchHistory)
             .catch(err => {
                 setError("failed to fetch match history");
-                console.error("Error fetching match history:", err);
+                // Optionally log error for debugging
             });
     }, [puuid, summonerRegion, count]);
 

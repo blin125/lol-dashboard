@@ -1,10 +1,9 @@
 import { fetchBase } from "./fetchDefault.js";
 
+// Fetches an array of match IDs for a given puuid and region
 export async function fetchMatchHistory(puuid, summonerRegion, count = 10) {
     let regionForMatch = summonerRegion;
-    console.log("so close", summonerRegion)
     if (["OC1", "SG2", "TW2", "VN2"].includes(summonerRegion)) {
-        console.log("this is the summoner region", summonerRegion)
         regionForMatch = "SEA";
     }
     const api = fetchBase(regionForMatch);

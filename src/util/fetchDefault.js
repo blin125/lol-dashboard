@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const API_KEY = 'RGAPI-5b95064c-e2ac-47b2-883f-60b842a13d48'; // ⚠️ Make sure not to expose this on frontend in production
-// Need to make sure to hide the API key in production, this is just for testing purposes
-// You can use environment variables or a config file to store the API key securely
+// Riot API key (do not expose in production)
+const API_KEY = 'RGAPI-5b95064c-e2ac-47b2-883f-60b842a13d48';
+
 const regionMap = {
     BR1: { name: "Brazil", cluster: "americas" },
     EUNE: { name: "Europe Nordic & East", cluster: "europe" },
@@ -19,15 +19,16 @@ const regionMap = {
     TW2: { name: "Taiwan", cluster: "asia" },
     TR1: { name: "Turkey", cluster: "europe" },
     VN2: { name: "Vietnam", cluster: "asia" },
-  };
+};
+
+// Returns an axios instance for the correct Riot API cluster
 function fetchBase(tag = 'BR1') {
     let region;
     if (tag === 'SEA') {
-        region = 'sea'; // Use 'sea' directly if tag is 'SEA'
+        region = 'sea';
     } else {
         region = regionMap[tag].cluster;
     }
-    console.log(`Using region: ${region}`); // Debugging line
     const instance = axios.create({
         baseURL: `https://${region}.api.riotgames.com/`,
     });
@@ -44,8 +45,9 @@ function fetchBase(tag = 'BR1') {
 
     return instance;
 }
+
+// Returns an axios instance for endpoints that require region by PUUID
 function fetchBasebyPUUID(tag = 'BR1') {
-    console.log(`Using region: ${tag.cluster}`); // Debugging line
     const instance = axios.create({
         baseURL: `https://${tag}.api.riotgames.com/`,
     });
@@ -61,20 +63,6 @@ function fetchBasebyPUUID(tag = 'BR1') {
     });
 
     return instance;
-}
-
-function fetchMatchDetails(matchIds, region) {
-    const api = fetchBase(region);
-    const details = [];
-    for (const matchId of matchIds) {
-        try {
-            const res = api.get(`/lol/match/v5/matches/${matchId}`);
-            details.push(res.data);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    return details;
 }
 
 export { fetchBase, fetchBasebyPUUID };

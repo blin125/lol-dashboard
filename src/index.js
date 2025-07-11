@@ -7,13 +7,16 @@ import useFetchSummonerByPUUID from './hooks/useFetchSummonerByPUUID.js';
 import useFetchSummonerGameStat from './hooks/useFetchSummonerGameStat.js';
 import useFetchMatchHistory from './hooks/useFetchMatchHistory.js';
 import useFetchMatchDetails from './hooks/useFetchMatchDetails.js';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 function App() {
   const [summonerName, setSummonerName] = useState('');
   const [summonerTag, setSummonerTag] = useState('');
   const [summonerRegion, setSummonerRegion] = useState('');
   const [submitted, setSubmitted] = useState(false); // Track if the form was submitted
   const [puuid, setPuuid] = useState(null);
+
   const {accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
   const {summonerData, error: puuidError } = useFetchSummonerByPUUID(puuid, summonerRegion);
   const {summonerGameData, error: gameStatError} = useFetchSummonerGameStat(puuid, summonerRegion);
@@ -32,31 +35,18 @@ function App() {
     setSummonerTag(tag);
     setSummonerRegion(event.target.Region.value);
     setSubmitted(true); // Set submitted to true when the form is submitted
-    console.log(`Submitting: ${name} with tag ${tag} and region ${event.target.Region.value}`);
   };
 
-  // Log summonerData when it updates
+  // Set puuid when accountData is fetched
   React.useEffect(() => {
     if (accountData) {
       setPuuid(accountData.puuid);
-      console.log('Account Data:', accountData);
     }
   }, [accountData]);
 
-  React.useEffect(() => {
-    if (summonerData) {
-      console.log('Summoner Data:', summonerData);
-    }
-  }, [summonerData]);
-
-  React.useEffect(() => {
-    if (summonerGameData) {
-      console.log('Summoner Game Data:', summonerGameData);
-      console.log('Summoner Game Data size:', summonerGameData.length);
-    }
-  }, [summonerGameData]);
   return (
     <div>
+      
       <h1>Summoner Data</h1>
       <form id="summonerId" onSubmit={handleSubmit}>
         <label htmlFor="Name">Name</label>
@@ -119,7 +109,6 @@ function App() {
               <ul>
                 {matchDetails.map(match => {
                   const player = match.info.participants.find(p => p.puuid === puuid);
-                  console.log(player)
                   if (!player) return null;
                   return (
                     <li key={match.metadata.matchId}>
@@ -132,8 +121,11 @@ function App() {
           )}
         </div>
     )}
+    
     </div>
+    
   );
+  
 }
 root.render(
   <React.StrictMode>

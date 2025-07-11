@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchMatchDetails } from "../util/fetchMatchDetails.js";
 
+// Fetches full match details for an array of match IDs and a region
 function useFetchMatchDetails(matchIds, region) {
     const [matchDetails, setMatchDetails] = useState([]);
     const [error, setError] = useState(null);
@@ -12,7 +13,7 @@ function useFetchMatchDetails(matchIds, region) {
             .then(setMatchDetails)
             .catch(err => {
                 setError("failed to fetch match details");
-                console.error("Error fetching match details:", err);
+                // Optionally log error for debugging
             });
     }, [matchIds, region]);
 

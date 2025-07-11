@@ -1,7 +1,8 @@
 import { fetchBasebyPUUID } from './fetchDefault.js';
+
+// Fetches summoner data by puuid and region
 async function fetchSummonerByPUUID(puuid, summonerRegion) {
-    const api = fetchBasebyPUUID(summonerRegion); 
-    console.log(`Fetching data for PUUID ${puuid} with tag ${summonerRegion}`); // Debugging line
+    const api = fetchBasebyPUUID(summonerRegion);
     try {
         const response = await api.get(`/lol/summoner/v4/summoners/by-puuid/${puuid}`);
         return response.data;

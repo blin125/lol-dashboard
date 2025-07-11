@@ -1,7 +1,8 @@
-import { fetchBase, fetchBasebyPUUID } from './fetchDefault.js';
+import { fetchBase } from './fetchDefault.js';
+
+// Fetches account data by summoner name and tag
 async function fetchAccountByName(summonerName, summonerTag, summonerRegion) {
-    const api = fetchBase(summonerRegion); 
-    console.log(`Fetching data for ${summonerName} with tag ${summonerTag}`); // Debugging line
+    const api = fetchBase(summonerRegion);
     try {
         const response = await api.get(`/riot/account/v1/accounts/by-riot-id/${summonerName}/${summonerTag}`);
         return response.data;

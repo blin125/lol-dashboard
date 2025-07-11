@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import fetchAccountByName from "../util/fetchAccountByName.js";
 
+// Fetches account data by summoner name, tag, and region
 function useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted) {
   const [accountData, setAccountData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!submitted || !summonerName || !summonerTag || !summonerRegion) return; // Skip if not submitted or inputs are empty
+    if (!submitted || !summonerName || !summonerTag || !summonerRegion) return;
 
     async function fetchData() {
       try {

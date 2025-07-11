@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import fetchSummonerByPUUID from "../util/fetchSummonerByPUUID.js";
 
+// Fetches summoner data by puuid and region
 function useFetchSummonerByPUUID(puuid, summonerRegion) {
-  const [summonerData, setSummonerData] = useState(null); // Renamed for consistency
+  const [summonerData, setSummonerData] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!puuid || !summonerRegion) return; // Skip if puuid or region is missing
+    if (!puuid || !summonerRegion) return;
 
     async function fetchData() {
       try {
-        setError(null); // Reset error before fetching
+        setError(null);
         const data = await fetchSummonerByPUUID(puuid, summonerRegion);
         setSummonerData(data);
       } catch (error) {
