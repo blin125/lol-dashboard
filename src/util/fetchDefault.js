@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = 'RGAPI-da169b50-3c48-4835-b04a-e5b865172c69'; // ⚠️ Make sure not to expose this on frontend in production
+const API_KEY = 'RGAPI-5b95064c-e2ac-47b2-883f-60b842a13d48'; // ⚠️ Make sure not to expose this on frontend in production
 // Need to make sure to hide the API key in production, this is just for testing purposes
 // You can use environment variables or a config file to store the API key securely
 const regionMap = {
@@ -61,6 +61,20 @@ function fetchBasebyPUUID(tag = 'BR1') {
     });
 
     return instance;
+}
+
+function fetchMatchDetails(matchIds, region) {
+    const api = fetchBase(region);
+    const details = [];
+    for (const matchId of matchIds) {
+        try {
+            const res = api.get(`/lol/match/v5/matches/${matchId}`);
+            details.push(res.data);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    return details;
 }
 
 export { fetchBase, fetchBasebyPUUID };

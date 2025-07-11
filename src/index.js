@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals.js';
 import useFetchSummonerByPUUID from './hooks/useFetchSummonerByPUUID.js';
 import useFetchSummonerGameStat from './hooks/useFetchSummonerGameStat.js';
 import useFetchMatchHistory from './hooks/useFetchMatchHistory.js';
+import useFetchMatchDetails from './hooks/useFetchMatchDetails.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 function App() {
   const [summonerName, setSummonerName] = useState('');
@@ -16,7 +17,8 @@ function App() {
   const {accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
   const {summonerData, error: puuidError } = useFetchSummonerByPUUID(puuid, summonerRegion);
   const {summonerGameData, error: gameStatError} = useFetchSummonerGameStat(puuid, summonerRegion);
-  const {matchHistory, error: matchHistoryError} = useFetchMatchHistory(puuid, summonerRegion, 5);
+  const { matchHistory, error: matchHistoryError } = useFetchMatchHistory(puuid, summonerRegion, 10);
+  const { matchDetails, error: matchDetailsError } = useFetchMatchDetails(matchHistory, summonerRegion);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -53,12 +55,6 @@ function App() {
       console.log('Summoner Game Data size:', summonerGameData.length);
     }
   }, [summonerGameData]);
-  React.useEffect(() => {
-    if (matchHistory) {
-      console.log('Match History Data:', matchHistory);
-    }
-  }, [matchHistory]);
-
   return (
     <div>
       <h1>Summoner Data</h1>
@@ -117,15 +113,23 @@ function App() {
               </ul>
             </div>
           )}
-          {matchHistory && 
-            (
-              <div>
-                <h2>Match History</h2>
+          {matchDetails && matchDetails.length > 0 && (
+            <div>
+              <h2>Match History</h2>
               <ul>
+                {matchDetails.map(match => {
+                  const player = match.info.participants.find(p => p.puuid === puuid);
+                  console.log(player)
+                  if (!player) return null;
+                  return (
+                    <li key={match.metadata.matchId}>
+                      <strong>{player.championName}</strong> | {player.kills}/{player.deaths}/{player.assists} | {player.win ? "Win" : "Loss"} | {match.info.gameMode}
+                    </li>
+                  );
+                })}
               </ul>
-              </div>
-            )
-          }
+            </div>
+          )}
         </div>
     )}
     </div>
