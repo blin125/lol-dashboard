@@ -12,7 +12,7 @@ export async function fetchMatchDetails(matchIds, region) {
             const res = await api.get(`/lol/match/v5/matches/${matchId}`);
             details.push(res.data);
         } catch (e) {
-            // Optionally handle errors
+            console.log("Error fatching Match Details");
         }
     }
     return details;

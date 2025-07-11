@@ -56,7 +56,7 @@ function App() {
             League of Legends Ranked Dashboard
           </h1>
           <p className="mt-2 text-lg text-blue-200/80 font-medium tracking-wide">
-            Track your ranked climb, analyze your games, and get futuristic insights.
+            Track your ranked climb, analyse your games, and get futuristic insights.
           </p>
         </header>
 
@@ -168,7 +168,7 @@ function App() {
               {/* AI Insights Card (placeholder for future AI features) */}
               <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-2xl shadow-xl p-6 border border-purple-800/40 mb-4">
                 <h3 className="text-lg font-semibold text-purple-200 mb-2 tracking-wide">AI Insights</h3>
-                <p className="text-gray-200 italic">Your personalized ranked tips and analysis will appear here soon!</p>
+                <p className="text-gray-200 italic">Your personalised ranked tips and analysis will appear here soon!</p>
               </div>
 
               {/* Match History */}
