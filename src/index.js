@@ -11,6 +11,10 @@ import useFetchMatchDetails from './hooks/useFetchMatchDetails.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 function App() {
+   // Pagination Handling
+  const matchesPerPage = 10;
+  const [currentMatchPage, setCurrentMatchPage] = useState(1);
+
   // State for form and data
   const [summonerName, setSummonerName] = useState('');
   const [summonerTag, setSummonerTag] = useState('');
@@ -22,20 +26,14 @@ function App() {
   const { accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
   const { summonerData } = useFetchSummonerByPUUID(puuid, summonerRegion);
   const { summonerGameData } = useFetchSummonerGameStat(puuid, summonerRegion);
-  const { matchHistory } = useFetchMatchHistory(puuid, summonerRegion, 40);
+  const { matchHistory } = useFetchMatchHistory(puuid, summonerRegion, matchesPerPage, currentMatchPage);
   const { matchDetails } = useFetchMatchDetails(matchHistory, summonerRegion);
 
-  // Pagination Handling
-  const [currentMatchPage, setCurrentMatchPage] = useState(1);
-  const matchesPerPage = 10;
+  // Pagination helpers
+  const MAX_PAGES = 20;
+  const hasNextPage = matchDetails && matchDetails.length === matchesPerPage && currentMatchPage < MAX_PAGES;
+  const totalPages = MAX_PAGES;
 
-  const totalPages = matchDetails ? Math.ceil(matchDetails.length / matchesPerPage) : 1;
-  const paginatedMatches = matchDetails
-  ? matchDetails.slice((currentMatchPage - 1) * matchesPerPage, currentMatchPage * matchesPerPage)
-  : [];
-  React.useEffect(() =>{
-    setCurrentMatchPage(1);
-  }, [matchDetails]);
 
   // Handle form submit
   const handleSubmit = (event) => {
@@ -188,7 +186,7 @@ function App() {
                 <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 rounded-2xl shadow-xl p-6 border border-blue-800/40">
                   <h3 className="text-xl font-semibold text-blue-200 mb-4 tracking-wide">Recent Ranked Matches</h3>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {paginatedMatches.map(match => {
+                    {matchDetails && matchDetails.map(match => {
                       const player = match.info.participants.find(p => p.puuid === puuid);
                       if (!player) return null;
                       return (
@@ -215,20 +213,20 @@ function App() {
                   </ul>
                   {/* {Pagination} */}
                   <div className="flex justify-center items-center gap-4 mt-6">
-                      <button
-                        className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
-                        onClick={() => setCurrentMatchPage(p => Math.max(p - 1, 1))}
-                        disabled= {currentMatchPage === 1}
-                      >
-                        Previous
-                      </button>
-                      <span className="text-blue-200">
-                    Page {currentMatchPage} of {totalPages}
-                  </span>
                     <button
                       className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
-                      onClick={() => setCurrentMatchPage(p => Math.min(p + 1, totalPages))}
-                      disabled={currentMatchPage === totalPages}
+                      onClick={() => setCurrentMatchPage(p => Math.max(p - 1, 1))}
+                      disabled={currentMatchPage === 1}
+                    >
+                      Previous
+                    </button>
+                    <span className="text-blue-200">
+                      Page {currentMatchPage} of {totalPages}
+                    </span>
+                    <button
+                      className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                      onClick={() => setCurrentMatchPage(p => p + 1)}
+                      disabled={!hasNextPage}
                     >
                       Next
                     </button>
