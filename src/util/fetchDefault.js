@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Riot API key (do not expose in production)
-const API_KEY = 'RGAPI-5b95064c-e2ac-47b2-883f-60b842a13d48';
+const API_KEY = 'RGAPI-005c89d6-99e5-47ba-bb35-90d629292956';
 
 const regionMap = {
     BR1: { name: "Brazil", cluster: "americas" },

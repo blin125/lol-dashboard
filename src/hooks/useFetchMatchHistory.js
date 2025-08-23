@@ -13,7 +13,6 @@ function useFetchMatchHistory(puuid, summonerRegion, count = 10) {
             .then(setMatchHistory)
             .catch(err => {
                 setError("failed to fetch match history");
-                // Optionally log error for debugging
             });
     }, [puuid, summonerRegion, count]);
 
