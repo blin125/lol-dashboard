@@ -7,12 +7,15 @@ import useFetchSummonerByPUUID from './hooks/useFetchSummonerByPUUID.js';
 import useFetchSummonerGameStat from './hooks/useFetchSummonerGameStat.js';
 import useFetchMatchHistory from './hooks/useFetchMatchHistory.js';
 import useFetchMatchDetails from './hooks/useFetchMatchDetails.js';
-
+import RoleWinRatePieChart from './components/RoleWinRatePieChart.js';
+import WinLossPieCharts from './components/WinLossPieCharts.js';
+import { regionMap } from './util/fetchDefault.js';
+const COLORS = ['#34D399', '#EF4444'];
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 function App() {
    // Pagination Handling
-  const matchesPerPage = 10;
+  const matchesPerPage = 6;
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
 
   // State for form and data
@@ -33,7 +36,9 @@ function App() {
   const MAX_PAGES = 20;
   const hasNextPage = matchDetails && matchDetails.length === matchesPerPage && currentMatchPage < MAX_PAGES;
   const totalPages = MAX_PAGES;
-
+  
+  // Region codes for League of Graphs
+  const logRegion = regionMap[summonerRegion]?.log || summonerRegion.toLowerCase();
 
   // Handle form submit
   const handleSubmit = (event) => {
@@ -120,7 +125,7 @@ function App() {
             {/* Left: Profile & Ranked */}
             <section className="lg:col-span-1 flex flex-col gap-8">
               {/* Loading */}
-              {loading && <div className="text-blue-400 text-lg animate-pulse">Loading...</div>}
+              {loading && <div className="text-blue-400 text-lg animate-pulse">Loading Matches...</div>}
 
               {/* Summoner Profile Card */}
               {accountData && summonerData && (
@@ -171,7 +176,13 @@ function App() {
                   </ul>
                 </div>
               )}
-            </section>
+{summonerGameData && summonerGameData.length > 0 && (
+  <>
+    <WinLossPieCharts rankedData={summonerGameData} />
+    <RoleWinRatePieChart matchDetails={matchDetails} puuid={puuid} />
+  </>
+)}
+</section>
 
             {/* Right: AI Insights & Match History */}
             <section className="lg:col-span-2 flex flex-col gap-8">
@@ -189,6 +200,11 @@ function App() {
                     {matchDetails && matchDetails.map(match => {
                       const player = match.info.participants.find(p => p.puuid === puuid);
                       if (!player) return null;
+                      // Remove region prefix from matchId (e.g. OC1_674935542 -> 674935542)
+                      const matchId = match.metadata.matchId.replace(/^[A-Z0-9]+_/, '');
+                      // Find your participant index for anchor (1-based)
+                      const participantIdx = match.info.participants.findIndex(p => p.puuid === puuid) + 1;
+                      const logUrl = `https://www.leagueofgraphs.com/match/${logRegion}/${matchId}#participant${participantIdx}`;
                       return (
                         <li key={match.metadata.matchId} className="bg-gray-800/80 rounded-lg p-4 flex flex-col gap-1 shadow">
                           <span className="font-bold text-blue-400">{player.championName}</span>
@@ -202,11 +218,19 @@ function App() {
                               <span className="text-red-400">Loss</span>
                             )}
                           </span>
-                          <span className="text-gray-400"> 
+                          <span className="text-gray-400">
                             {
                               match.info.queueId === 420 ? "Ranked Solo/Duo" : match.info.queueId === 440 ? "Ranked Flex" : match.info.gameMode
                             }
-                           </span>
+                          </span>
+                          <a
+                            href={logUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 text-blue-400 underline hover:text-blue-200 text-sm"
+                          >
+                            View on League of Graphs
+                          </a>
                         </li>
                       );
                     })}
@@ -232,7 +256,7 @@ function App() {
                     </button>
                   </div>
                 </div>
-              )}
+              )}            
             </section>
           </main>
         )}
