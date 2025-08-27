@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import useFetchSummonerByName from './hooks/useFetchSummonerByName.js';
@@ -10,11 +10,11 @@ import useFetchMatchDetails from './hooks/useFetchMatchDetails.js';
 import RoleWinRatePieChart from './components/RoleWinRatePieChart.js';
 import WinLossPieCharts from './components/WinLossPieCharts.js';
 import { regionMap } from './util/fetchDefault.js';
-const COLORS = ['#34D399', '#EF4444'];
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 function App() {
-   // Pagination Handling
+  // Pagination Handling
   const matchesPerPage = 10;
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
 
@@ -26,16 +26,30 @@ function App() {
   const [puuid, setPuuid] = useState(null);
 
   // Custom hooks for Riot API data
-  const { accountData, error, loading } = useFetchSummonerByName(summonerName, summonerTag, summonerRegion, submitted);
+  const { accountData } = useFetchSummonerByName(
+    summonerName,
+    summonerTag,
+    summonerRegion,
+    submitted
+  );
   const { summonerData } = useFetchSummonerByPUUID(puuid, summonerRegion);
   const { summonerGameData } = useFetchSummonerGameStat(puuid, summonerRegion);
-  const { matchHistory } = useFetchMatchHistory(puuid, summonerRegion, matchesPerPage, currentMatchPage);
-  const { matchDetails, error: matchDetailsError, loading: matchDetailsLoading } = useFetchMatchDetails(matchHistory, summonerRegion);
+
+  const {
+    paginatedMatches,
+    allMatchIds,
+    loading: matchHistoryLoading,
+    error: matchHistoryError,
+  } = useFetchMatchHistory(puuid, summonerRegion, matchesPerPage, currentMatchPage);
+
+  const { matchDetails } = useFetchMatchDetails(paginatedMatches, summonerRegion);
+
   // Pagination helpers
   const MAX_PAGES = 20;
-  const hasNextPage = matchDetails && matchDetails.length === matchesPerPage && currentMatchPage < MAX_PAGES;
+  const hasNextPage =
+    matchDetails && matchDetails.length === matchesPerPage && currentMatchPage < MAX_PAGES;
   const totalPages = MAX_PAGES;
-  
+
   // Region codes for League of Graphs
   const logRegion = regionMap[summonerRegion]?.log || summonerRegion.toLowerCase();
 
@@ -54,7 +68,7 @@ function App() {
   };
 
   // Set puuid when accountData is fetched
-  React.useEffect(() => {
+  useEffect(() => {
     if (accountData) {
       setPuuid(accountData.puuid);
     }
@@ -62,7 +76,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-950 text-gray-100 font-sans">
-      {/* Futuristic neon border and glow */}
       <div className="max-w-5xl mx-auto py-10 px-4">
         {/* Header */}
         <header className="mb-10 text-center">
@@ -75,11 +88,7 @@ function App() {
         </header>
 
         {/* Search Bar */}
-        <form
-          id="summonerId"
-          onSubmit={handleSubmit}
-          className="flex flex-col md:flex-row gap-4 items-center mb-12 bg-gradient-to-r from-blue-900/60 to-blue-700/60 p-4 rounded-2xl shadow-lg border border-blue-800/40"
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 items-center mb-12 bg-gradient-to-r from-blue-900/60 to-blue-700/60 p-4 rounded-2xl shadow-lg border border-blue-800/40">
           <input
             type="text"
             id="Name"
@@ -123,9 +132,9 @@ function App() {
           <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left: Profile & Ranked */}
             <section className="lg:col-span-1 flex flex-col gap-8">
-              {/* Loading */}
-              {loading && <div className="text-blue-400 text-lg animate-pulse">Loading Matches...</div>}
-
+              {matchHistoryLoading && (
+                <div className="text-blue-400 text-lg animate-pulse">Loading Matches...</div>
+              )}
               {/* Summoner Profile Card */}
               {accountData && summonerData && (
                 <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 rounded-2xl shadow-xl p-6 flex flex-col items-center border border-blue-800/40">
@@ -235,7 +244,15 @@ function App() {
                   })}
                 </ul>
                 {/* Pagination */}
+                  
                 <div className="flex justify-center items-center gap-4 mt-6">
+                  <button
+                    className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                    onClick={() => setCurrentMatchPage(1)}
+                    disabled={currentMatchPage === 1}
+                  >
+                    First
+                  </button>
                   <button
                     className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
                     onClick={() => setCurrentMatchPage(p => Math.max(p - 1, 1))}
@@ -252,6 +269,13 @@ function App() {
                     disabled={!hasNextPage}
                   >
                     Next
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                    onClick={() => setCurrentMatchPage(8)}
+                    disabled={currentMatchPage === totalPages}
+                  >
+                    Last
                   </button>
                 </div>
               </div>
