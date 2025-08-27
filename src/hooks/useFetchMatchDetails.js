@@ -1,20 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { fetchMatchDetails } from "../util/fetchMatchDetails.js";
 
-// Fetches full match details for an array of match IDs and a region
 function useFetchMatchDetails(matchIds, region) {
     const [matchDetails, setMatchDetails] = useState([]);
     const [error, setError] = useState(null);
 
+    const cacheRef = useRef({});
+
     useEffect(() => {
         if (!matchIds || matchIds.length === 0 || !region) return;
+
+        let isCancelled = false;
         setError(null);
-        fetchMatchDetails(matchIds, region)
-            .then(setMatchDetails)
-            .catch(err => {
-                setError("failed to fetch match details");
-                // Optionally log error for debugging
-            });
+
+        const fetchAll = async () => {
+            try {
+                const results = await Promise.all(
+                    matchIds.map(async (id) => {
+                        if (cacheRef.current[id]) {
+                            return cacheRef.current[id];
+                        }
+                        const detail = await fetchMatchDetails([id], region);
+                        cacheRef.current[id] = detail[0];
+                        return detail[0];
+                    })
+                );
+                if (!isCancelled) setMatchDetails(results);
+            } catch (err) {
+                if (!isCancelled) setError("failed to fetch match details");
+            }
+        };
+
+        fetchAll();
+
+        return () => { isCancelled = true; };
     }, [matchIds, region]);
 
     return { matchDetails, error };
