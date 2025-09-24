@@ -11,7 +11,7 @@ export default function WinLossPieCharts({ rankedData }) {
   const getLabel = (entry) => `${entry.name}: ${entry.value}`;
 
   return (
-    <div className="flex flex-wrap gap-6 mt-6 justify-center">
+    <div className="grid grid-cols-2 gap-4">
       {queues.map((queue, idx) => {
         const data = [
           { name: 'Wins', value: queue.wins },
@@ -21,7 +21,7 @@ export default function WinLossPieCharts({ rankedData }) {
           queue.queueType === 'RANKED_SOLO_5x5' ? 'Ranked Solo/Duo' : 'Ranked Flex';
 
         return (
-          <div key={idx} className="bg-gray-900 p-4 rounded-xl border border-blue-800 shadow-md">
+          <div key={idx} className="bg-gray-700 p-4 rounded-xl border border-blue-800 shadow-md flex flex-col items-center">
             <h4 className="text-blue-200 font-semibold text-center mb-2">{title}</h4>
             <PieChart width={250} height={250}>
               <Pie
@@ -29,7 +29,7 @@ export default function WinLossPieCharts({ rankedData }) {
                 cx="50%"
                 cy="50%"
                 label={getLabel}
-                outerRadius={80}
+                outerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
               >

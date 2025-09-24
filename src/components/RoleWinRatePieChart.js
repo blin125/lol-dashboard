@@ -1,61 +1,101 @@
 import React from 'react';
-import { PieChart, Pie, Cell, Legend } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 
 const ROLE_COLORS = {
   TOP: '#60A5FA',
   JUNGLE: '#34D399',
   MIDDLE: '#FBBF24',
   BOTTOM: '#F472B6',
-  UTILITY: '#A78BFA'
+  UTILITY: '#A78BFA',
+  UNKNOWN: '#9CA3AF',
 };
 
-export default function RoleWinRatePieChart({ matchDetails, puuid }) {
-  if (!matchDetails || matchDetails.length === 0) return null;
+// preferred display order
+const ROLE_ORDER = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY', 'UNKNOWN'];
 
-  const roleStats = {};
+export default function RoleWinRatePieChart({ matchDetails = [], puuid }) {
+  if (!matchDetails || matchDetails.length === 0 || !puuid) return null;
 
-  matchDetails.forEach((match) => {
-    const player = match.info.participants.find(p => p.puuid === puuid);
+  // aggregate wins/games per role
+  const stats = {};
+  matchDetails.forEach((m) => {
+    const player = m.info?.participants?.find((p) => p.puuid === puuid);
     if (!player) return;
-
-    const role = player.teamPosition;
-    if (!role || role === '') return;
-
-    if (!roleStats[role]) {
-      roleStats[role] = { wins: 0, total: 0 };
-    }
-
-    roleStats[role].total += 1;
-    if (player.win) {
-      roleStats[role].wins += 1;
-    }
+    const raw = (player.teamPosition || 'UNKNOWN').toString().toUpperCase();
+    const role = ROLE_ORDER.includes(raw) ? raw : 'UNKNOWN';
+    if (!stats[role]) stats[role] = { wins: 0, games: 0 };
+    stats[role].games += 1;
+    if (player.win) stats[role].wins += 1;
   });
 
-  const chartData = Object.entries(roleStats).map(([role, stat]) => ({
-    name: role,
-    value: parseFloat((stat.wins / stat.total * 100).toFixed(1))
-  }));
+  // build data only for roles that were played
+  const chartData = ROLE_ORDER
+    .map((role) => {
+      const r = stats[role];
+      if (!r) return null;
+      const winrate = r.games > 0 ? parseFloat(((r.wins / r.games) * 100).toFixed(1)) : 0;
+      return { role, winrate, games: r.games };
+    })
+    .filter(Boolean);
+
+  if (chartData.length === 0) return null;
 
   return (
-    <div className="bg-gray-900 p-4 rounded-xl border border-blue-800 shadow-md mt-6 max-w-md mx-auto">
-      <h4 className="text-blue-200 font-semibold text-center mb-2">Win Rate by Role</h4>
-      <PieChart width={300} height={300}>
-        <Pie
-          data={chartData}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={({ name, value }) => `${name}: ${value}%`}
-          outerRadius={100}
-          fill="#8884d8"
-          dataKey="value"
-        >
-          {chartData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.name] || '#DDD'} />
-          ))}
-        </Pie>
-        <Legend verticalAlign="bottom" height={36} />
-      </PieChart>
+    <div className="bg-gray-900 p-4 rounded-xl border border-blue-800 shadow-md w-full">
+      <h4 className="text-blue-200 font-semibold text-center mb-3">Win Rate by Role</h4>
+
+      <div style={{ width: '100%', height: 260 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{ top: 8, right: 12, left: 8, bottom: 6 }}
+            barCategoryGap="20%"
+          >
+            <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
+            <XAxis
+              dataKey="role"
+              tick={{ fill: '#c7d2fe', fontSize: 12 }}
+              interval={0}
+              angle={-20}
+              textAnchor="end"
+              height={50}
+            />
+            <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fill: '#c7d2fe' }} />
+            <Tooltip formatter={(value) => `${value}%`} />
+            <Bar dataKey="winrate" name="Winrate" radius={[6, 6, 0, 0]}>
+              {chartData.map((entry, i) => (
+                <Cell key={`cell-${i}`} fill={ROLE_COLORS[entry.role] || ROLE_COLORS.UNKNOWN} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="mt-3 text-sm text-blue-200/80 flex flex-wrap justify-center gap-4">
+        {chartData.map((d) => (
+          <div key={d.role} className="flex items-center gap-2">
+            <span
+              style={{
+                width: 12,
+                height: 12,
+                background: ROLE_COLORS[d.role] || ROLE_COLORS.UNKNOWN,
+                display: 'inline-block',
+                borderRadius: 3,
+              }}
+            />
+            <span>{d.role}: {d.winrate}% ({d.games})</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

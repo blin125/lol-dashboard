@@ -76,7 +76,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-950 text-gray-100 font-sans">
-      <div className="max-w-5xl mx-auto py-10 px-4">
+      <div className="max-w-8xl mx-auto py-10 px-4">
         {/* Header */}
         <header className="mb-10 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 drop-shadow-lg">
@@ -129,9 +129,9 @@ function App() {
 
         {/* Panels */}
         {submitted && (
-          <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left: Profile & Ranked */}
-            <section className="lg:col-span-1 flex flex-col gap-8">
+          <main className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Left Panel: Profile & Ranked */}
+              <section className="lg:col-span-1 flex flex-col gap-8">
               {matchHistoryLoading && (
                 <div className="text-blue-400 text-lg animate-pulse">Loading Matches...</div>
               )}
@@ -184,104 +184,107 @@ function App() {
                   </ul>
                 </div>
               )}
-              {summonerGameData && summonerGameData.length > 0 && (
-                <>
-                  <WinLossPieCharts rankedData={summonerGameData} />
-                  <RoleWinRatePieChart matchDetails={matchDetails} puuid={puuid} />
-                </>
-              )}
               </section>
 
-            {/* Right: AI Insights & Match History */}
-            <section className="lg:col-span-2 flex flex-col gap-8">
-              {/* AI Insights Card (placeholder for future AI features) */}
-              <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-2xl shadow-xl p-6 border border-purple-800/40 mb-4">
-                <h3 className="text-lg font-semibold text-purple-200 mb-2 tracking-wide">AI Insights</h3>
-                <p className="text-gray-200 italic">Your personalised ranked tips and analysis will appear here soon!</p>
-              </div>
+            {/* Middle Panel: Match History & AI insights */}
+              <section className="lg:col-span-2 flex flex-col gap-8">
+                  {/* AI Insights Card (placeholder for future AI features) */}
+                  <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-2xl shadow-xl p-6 border border-purple-800/40 mb-4">
+                    <h3 className="text-lg font-semibold text-purple-200 mb-2 tracking-wide">AI Insights</h3>
+                    <p className="text-gray-200 italic">Your personalised ranked tips and analysis will appear here soon!</p>
+                  </div>
 
-            {/* Match History */}
-            {matchDetails && matchDetails.length > 0 && (
-              <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 rounded-2xl shadow-xl p-6 border border-blue-800/40">
-                <h3 className="text-xl font-semibold text-blue-200 mb-4 tracking-wide">Recent Ranked Matches</h3>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {matchDetails.map(match => {
-                    const player = match.info?.participants.find(p => p.puuid === puuid);
-                    if (!player) return null;
-                    const matchId = match.metadata.matchId.replace(/^[A-Z0-9]+_/, '');
-                    const participantIdx = match.info.participants.findIndex(p => p.puuid === puuid) + 1;
-                    const logUrl = `https://www.leagueofgraphs.com/match/${logRegion}/${matchId}#participant${participantIdx}`;
-                    return (
-                      <li key={match.metadata.matchId} className="bg-gray-800/80 rounded-lg p-4 flex flex-col gap-1 shadow">
-                        <span className="font-bold text-blue-400">{player.championName}</span>
-                        <span>
-                          <span className="text-green-400">{player.kills}</span>/
-                          <span className="text-red-400">{player.deaths}</span>/
-                          <span className="text-yellow-300">{player.assists}</span>
-                          {" "} | {player.win ? (
-                            <span className="text-green-400">Win</span>
-                          ) : (
-                            <span className="text-red-400">Loss</span>
-                          )}
-                        </span>
-                        <span className="text-gray-400">
-                          {match.info.queueId === 420
-                            ? "Ranked Solo/Duo"
-                            : match.info.queueId === 440
-                            ? "Ranked Flex"
-                            : match.info.gameMode}
-                        </span>
-                        <a
-                          href={logUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 text-blue-400 underline hover:text-blue-200 text-sm"
-                        >
-                          View on League of Graphs
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-                {/* Pagination */}
-                  
-                <div className="flex justify-center items-center gap-4 mt-6">
-                  <button
-                    className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
-                    onClick={() => setCurrentMatchPage(1)}
-                    disabled={currentMatchPage === 1}
-                  >
-                    First
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
-                    onClick={() => setCurrentMatchPage(p => Math.max(p - 1, 1))}
-                    disabled={currentMatchPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span className="text-blue-200">
-                    Page {currentMatchPage} of {totalPages}
-                  </span>
-                  <button
-                    className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
-                    onClick={() => setCurrentMatchPage(p => p + 1)}
-                    disabled={!hasNextPage}
-                  >
-                    Next
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
-                    onClick={() => setCurrentMatchPage(matchDetails.length)}
-                    disabled={currentMatchPage === totalPages}
-                  >
-                    Last
-                  </button>
-                </div>
-              </div>
-            )}
-                          
-            </section>
+                {/* Match History */}
+                {matchDetails && matchDetails.length > 0 && (
+                  <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 rounded-2xl shadow-xl p-6 border border-blue-800/40">
+                    <h3 className="text-xl font-semibold text-blue-200 mb-4 tracking-wide">Recent Ranked Matches</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {matchDetails.map(match => {
+                        const player = match.info?.participants.find(p => p.puuid === puuid);
+                        if (!player) return null;
+                        const matchId = match.metadata.matchId.replace(/^[A-Z0-9]+_/, '');
+                        const participantIdx = match.info.participants.findIndex(p => p.puuid === puuid) + 1;
+                        const logUrl = `https://www.leagueofgraphs.com/match/${logRegion}/${matchId}#participant${participantIdx}`;
+                        return (
+                          <li key={match.metadata.matchId} className="bg-gray-800/80 rounded-lg p-4 flex flex-col gap-1 shadow">
+                            <span className="font-bold text-blue-400">{player.championName}</span>
+                            <span>
+                              <span className="text-green-400">{player.kills}</span>/
+                              <span className="text-red-400">{player.deaths}</span>/
+                              <span className="text-yellow-300">{player.assists}</span>
+                              {" "} | {player.win ? (
+                                <span className="text-green-400">Win</span>
+                              ) : (
+                                <span className="text-red-400">Loss</span>
+                              )}
+                            </span>
+                            <span className="text-gray-400">
+                              {match.info.queueId === 420
+                                ? "Ranked Solo/Duo"
+                                : match.info.queueId === 440
+                                ? "Ranked Flex"
+                                : match.info.gameMode}
+                            </span>
+                            <a
+                              href={logUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-2 text-blue-400 underline hover:text-blue-200 text-sm"
+                            >
+                              View on League of Graphs
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {/* Pagination */}
+                      
+                    <div className="flex justify-center items-center gap-4 mt-6">
+                      <button
+                        className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                        onClick={() => setCurrentMatchPage(1)}
+                        disabled={currentMatchPage === 1}
+                      >
+                        First
+                      </button>
+                      <button
+                        className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                        onClick={() => setCurrentMatchPage(p => Math.max(p - 1, 1))}
+                        disabled={currentMatchPage === 1}
+                      >
+                        Previous
+                      </button>
+                      <span className="text-blue-200">
+                        Page {currentMatchPage} of {totalPages}
+                      </span>
+                      <button
+                        className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                        onClick={() => setCurrentMatchPage(p => p + 1)}
+                        disabled={!hasNextPage}
+                      >
+                        Next
+                      </button>
+                      <button
+                        className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                        onClick={() => setCurrentMatchPage(matchDetails.length)}
+                        disabled={currentMatchPage === totalPages}
+                      >
+                        Last
+                      </button>
+                    </div>
+                  </div>
+                )}
+                              
+                </section>
+            {/* Right Panel: Graphs */}
+              <section className="lg:col-span-1 flex flex-col gap-8">
+                {summonerGameData && summonerGameData.length > 0 && (
+                  <WinLossPieCharts rankedData={summonerGameData} />
+                )}
+                {matchDetails && matchDetails.length > 0 && puuid && (
+                  <RoleWinRatePieChart matchDetails={matchDetails} puuid={puuid} />
+                )}
+              </section>   
           </main>
         )}
       </div>
