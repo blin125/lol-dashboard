@@ -47,8 +47,8 @@ function App() {
   // Pagination helpers
   const MAX_PAGES = 20;
   const hasNextPage =
-    matchDetails && matchDetails.length === matchesPerPage && currentMatchPage < MAX_PAGES;
-  const totalPages = MAX_PAGES;
+    matchDetails && matchDetails.length === matchesPerPage && currentMatchPage < matchDetails.length;
+  const totalPages = matchDetails.length;
 
   // Region codes for League of Graphs
   const logRegion = regionMap[summonerRegion]?.log || summonerRegion.toLowerCase();
@@ -272,7 +272,7 @@ function App() {
                   </button>
                   <button
                     className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
-                    onClick={() => setCurrentMatchPage(8)}
+                    onClick={() => setCurrentMatchPage(matchDetails.length)}
                     disabled={currentMatchPage === totalPages}
                   >
                     Last
