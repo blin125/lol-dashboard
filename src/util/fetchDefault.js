@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 // Riot API key (do not expose in production)
-console.log("Riot API Key:", process.env.REACT_APP_RIOT_API_KEY);
 const API_KEY = process.env.REACT_APP_RIOT_API_KEY;
 
 const regionMap = {

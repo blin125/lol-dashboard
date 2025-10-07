@@ -12,7 +12,6 @@ import WinLossPieCharts from './components/WinLossPieCharts.js';
 import { regionMap } from './util/fetchDefault.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-
 function App() {
   // Pagination Handling
   const matchesPerPage = 10;
@@ -24,6 +23,7 @@ function App() {
   const [summonerRegion, setSummonerRegion] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [puuid, setPuuid] = useState(null);
+  const [formError, setFormError] = useState('');
 
   // Custom hooks for Riot API data
   const { accountData } = useFetchSummonerByName(
@@ -56,11 +56,13 @@ function App() {
   // Handle form submit
   const handleSubmit = (event) => {
     event.preventDefault();
-    const [name, tag] = event.target.Name.value.trim().split('#');
+    const raw = event.target.Name.value.trim();
+    const [name, tag] = raw.split('#');
     if (!name || !tag) {
-      alert('Please fill in all fields.');
+      setFormError('Enter your SummonerName followed by # and your TAG, e.g. SummonerName#EUW1');
       return;
     }
+    setFormError('');
     setSummonerName(name);
     setSummonerTag(tag);
     setSummonerRegion(event.target.Region.value);
@@ -73,6 +75,8 @@ function App() {
       setPuuid(accountData.puuid);
     }
   }, [accountData]);
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-950 text-gray-100 font-sans">
@@ -93,10 +97,16 @@ function App() {
             type="text"
             id="Name"
             name="Name"
-            placeholder="Summoner Name #TAG"
-            className="flex-1 px-4 py-2 rounded-lg bg-gray-800 text-gray-100 border border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+            placeholder="SummonerName#TAG (example: PlayerOne#EUW1)"
+            aria-describedby="name-error"
+            className={`flex-1 px-4 py-2 rounded-lg bg-gray-800 text-gray-100 border border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg ${formError ? 'ring-2 ring-red-500' : ''}`}
             required
           />
+          {formError && (
+            <p id="name-error" role="alert" className="mt-2 text-sm text-red-400">
+              {formError}
+            </p>
+          )}
           <select
             id="Region"
             name="Region"

@@ -42,7 +42,8 @@ export default function RoleWinRatePieChart({ matchDetails = [], puuid }) {
     .map((role) => {
       const r = stats[role];
       if (!r) return null;
-      const winrate = r.games > 0 ? parseFloat(((r.wins / r.games) * 100).toFixed(1)) : 0;
+      const winrate =
+        r.games > 0 ? parseFloat(((r.wins / r.games) * 100).toFixed(1)) : 0;
       return { role, winrate, games: r.games };
     })
     .filter(Boolean);
@@ -50,8 +51,10 @@ export default function RoleWinRatePieChart({ matchDetails = [], puuid }) {
   if (chartData.length === 0) return null;
 
   return (
-    <div className="bg-gray-900 p-4 rounded-xl border border-blue-800 shadow-md w-full">
-      <h4 className="text-blue-200 font-semibold text-center mb-3">Win Rate by Role</h4>
+    <div className="p-4 rounded-xl shadow-md w-full bg-transparent border border-blue-800/30">
+      <h4 className="text-blue-200 font-semibold text-center mb-3">
+        Win Rate by Role
+      </h4>
 
       <div style={{ width: '100%', height: 260 }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -59,6 +62,7 @@ export default function RoleWinRatePieChart({ matchDetails = [], puuid }) {
             data={chartData}
             margin={{ top: 8, right: 12, left: 8, bottom: 6 }}
             barCategoryGap="20%"
+            style={{ backgroundColor: 'transparent' }}
           >
             <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
             <XAxis
@@ -69,11 +73,33 @@ export default function RoleWinRatePieChart({ matchDetails = [], puuid }) {
               textAnchor="end"
               height={50}
             />
-            <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fill: '#c7d2fe' }} />
-            <Tooltip formatter={(value) => `${value}%`} />
-            <Bar dataKey="winrate" name="Winrate" radius={[6, 6, 0, 0]}>
+            <YAxis
+              domain={[0, 100]}
+              tickFormatter={(v) => `${v}%`}
+              tick={{ fill: '#c7d2fe' }}
+            />
+          <Tooltip
+            formatter={(value) => `${value}%`}
+            contentStyle={{
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              borderRadius: '0.5rem',
+              color: '#E0E7FF',
+            }}
+            itemStyle={{
+              color: '#E0E7FF',
+            }}
+            labelStyle={{
+              color: '#93C5FD',
+            }}
+             cursor={{fill: 'transparent'}}
+          />
+            <Bar dataKey="winrate" name="Winrate" radius={[6, 6, 0, 0]} isAnimationActive={false}>
               {chartData.map((entry, i) => (
-                <Cell key={`cell-${i}`} fill={ROLE_COLORS[entry.role] || ROLE_COLORS.UNKNOWN} />
+                <Cell
+                  key={`cell-${i}`}
+                  fill={ROLE_COLORS[entry.role] || ROLE_COLORS.UNKNOWN}
+                />
               ))}
             </Bar>
           </BarChart>
@@ -92,7 +118,9 @@ export default function RoleWinRatePieChart({ matchDetails = [], puuid }) {
                 borderRadius: 3,
               }}
             />
-            <span>{d.role}: {d.winrate}% ({d.games})</span>
+            <span>
+              {d.role}: {d.winrate}% ({d.games})
+            </span>
           </div>
         ))}
       </div>
