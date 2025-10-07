@@ -99,14 +99,10 @@ function App() {
             name="Name"
             placeholder="SummonerName#TAG (example: PlayerOne#EUW1)"
             aria-describedby="name-error"
+            onChange={(e) => { if (formError) setFormError(''); }}
             className={`flex-1 px-4 py-2 rounded-lg bg-gray-800 text-gray-100 border border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg ${formError ? 'ring-2 ring-red-500' : ''}`}
             required
           />
-          {formError && (
-            <p id="name-error" role="alert" className="mt-2 text-sm text-red-400">
-              {formError}
-            </p>
-          )}
           <select
             id="Region"
             name="Region"
@@ -136,6 +132,15 @@ function App() {
             Search
           </button>
         </form>
+
+        {/* Form-level error shown underneath the form (centered) */}
+        {formError && (
+          <div className="mb-6">
+            <p id="name-error" role="alert" aria-live="assertive" className="text-center text-sm text-red-400">
+              {formError}
+            </p>
+          </div>
+        )}
 
         {/* Panels */}
         {submitted && (
